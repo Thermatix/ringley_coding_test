@@ -6,7 +6,7 @@ class Reminder
 
   def on(date,estates)
     dates = get_dates date,estates
-    puts "Reminders for estate service charges for the next service period (from #{date.to_date})"
+    puts "Estate service charges due for the next service period (#{date.to_date}):"
     dispay_estate dates
   end
 
