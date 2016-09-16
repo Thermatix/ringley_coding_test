@@ -1,0 +1,20 @@
+- estate_code: '0066S'
+  service_charge: 'quarterly'
+  due_dates:
+    - '1st Feb'
+    - '3rd May'
+    - '1st Aug'
+    - '5th Nov'
+- estate_code: '0123S'
+  service_charge: 'quarterly'
+  due_dates:
+    - '28th Feb'
+    - '31st May'
+    - '31st Aug'
+    - '30th Nov'
+- estate_code: '0250S'
+  service_charge: 'biannually'
+  due_dates:
+    - '23rd Jan'
+    - '22nd Jun'
+
