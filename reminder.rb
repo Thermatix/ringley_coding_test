@@ -13,8 +13,8 @@ class Reminder
 
   def get_dates(date,estates)
     estates.inject([]) do |res,estate|
-      du_d = check_if_due estate['due_dates'],estate['service_charge'],date
-      du_d ? res + du_d.map {|d| {date: d, code: estate['estate_code']}} : res
+      due_dates = check_if_due estate['due_dates'],estate['service_charge'],date
+      due_dates ? res + due_dates.map {|d| {date: d, code: estate['estate_code']}} : res
     end
   end
 
@@ -27,13 +27,13 @@ class Reminder
   private
 
   def check_if_due(dates,service,for_date)
-    res = dates.select {|date| within_next_service_perdiod? for_date,@rules[service],date }
+    res = dates.select {|date| within_next_service_period? for_date,@rules[service],date }
     res.empty? ? false : res
   end
 
-  def within_next_service_perdiod?(for_date,month_count,date)
-    f_d = for_date.to_time.to_i
-    (f_d..(f_d + to_months(month_count))) === DateTime.parse("#{date} #{for_date.year}").to_time.to_i
+  def within_next_service_period?(for_date,month_count,date)
+    f_d_in_seconds = for_date.to_time.to_i
+    (f_d_in_seconds..(f_d_in_seconds + to_months(month_count))) === DateTime.parse("#{date} #{for_date.year}").to_time.to_i
   end
 
   def to_months(count)
