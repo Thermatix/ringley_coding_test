@@ -32,8 +32,17 @@ class Reminder
   end
 
   def within_next_service_period?(for_date,month_count,date)
-    f_d_in_seconds = for_date.to_time.to_i
-    (f_d_in_seconds..(f_d_in_seconds + to_months(month_count))) === DateTime.parse("#{date} #{for_date.year}").to_time.to_i
+    start_date = for_date.to_time.to_i
+    end_date = start_date + to_months(month_count)
+    (start_date..end_date) === DateTime.parse("#{date} #{get_year(end_date,for_date)}").to_time.to_i
+  end
+
+  def get_year(end_date,date)
+    if (end_year = Time.at(end_date).to_datetime.year) > date.year
+      end_year
+    else
+      date.year
+    end
   end
 
   def to_months(count)
