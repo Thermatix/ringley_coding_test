@@ -21,14 +21,18 @@ class Reminder
   def get_dates(date,estates)
     estates.inject([]) do |res,estate|
       due_dates = check_if_due estate['due_dates'],estate['service_charge'],date
-      due_dates ? res + due_dates.map {|dd|
+      if due_dates
+        res + due_dates.map {|dd|
         due_date = get_due_date(dd,date)
-        {
-          date: due_date.strftime(Date_Template),
-          code: estate['estate_code'],
-          reminder: get_reminder(due_date,estate['service_charge'])
+          {
+            date: due_date.strftime(Date_Template),
+            code: estate['estate_code'],
+            reminder: get_reminder(due_date,estate['service_charge'])
+          }
         }
-      } : res
+      else
+        res
+      end
     end
   end
 
@@ -40,6 +44,7 @@ class Reminder
   def get_reminder(due_date,service_charge)
     (due_date - @rules['days_before'][service_charge]).strftime(Date_Template)
   end
+
   def dispay_estate(dates)
     dates.each(&Display_Estate)
   end
