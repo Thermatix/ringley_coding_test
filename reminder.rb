@@ -1,5 +1,6 @@
 class Reminder
   attr_reader :rules
+  Display_Estate = -> estate { puts "%s | %s due date %s" % [estate[:reminder], estate[:code],estate[:date]]}
   def initialize(rules)
     @rules = rules
   end
@@ -7,6 +8,8 @@ class Reminder
   def on(date,estates)
     dates = get_dates date,estates
     puts "Estate service charges due for the next service period(#{date.to_date}):"
+    puts "   Dates    |  Reminders "
+    puts "-------------------------"
     dispay_estate dates
   end
 
@@ -14,20 +17,20 @@ class Reminder
   def get_dates(date,estates)
     estates.inject([]) do |res,estate|
       due_dates = check_if_due estate['due_dates'],estate['service_charge'],date
-      due_dates ? res + due_dates.map {|d| {date: d, code: estate['estate_code']}} : res
+      due_dates ? res + due_dates.map {|d| {date: d,
+                                            code: estate['estate_code'],
+                                            reminder: (DateTime.parse(d) - @rules['days_before'][estate['service_charge']]).strftime("%e %b %Y") }} : res
     end
   end
 
   def dispay_estate(dates)
-    dates.each do |estate|
-      puts "#{estate[:code]} due date #{estate[:date]}"
-    end
+    dates.each(&Display_Estate)
   end
 
   private
 
   def check_if_due(dates,service,for_date)
-    res = dates.select {|date| within_next_service_period? for_date,@rules[service],date }
+    res = dates.select {|date| within_next_service_period? for_date,@rules['service_period'][service],date }
     res.empty? ? false : res
   end
 

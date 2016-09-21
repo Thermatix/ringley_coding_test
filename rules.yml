@@ -1,3 +1,6 @@
-quarterly: 3
-
-biannually: 6
+days_before:
+  quarterly: 30
+  biannually: 60
+service_period:
+  quarterly: 3
+  biannually: 6
