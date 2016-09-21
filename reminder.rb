@@ -2,7 +2,7 @@ class Reminder
   attr_reader :rules
   Display_Estate = -> estate { puts "%s | %s due date %s" % [estate[:reminder], estate[:code],estate[:date]]}
   Date_Template = "%e %b %Y"
-
+  End_Of_First_Quarter = 4
   def initialize(rules)
     @rules = rules
   end
@@ -31,7 +31,7 @@ class Reminder
   end
 
   def get_due_date(due_date,date)
-    if DateTime.parse(due_date).month < 4
+    if DateTime.parse(due_date).month < End_Of_First_Quarter
       DateTime.parse("#{due_date} #{date.year + 1}")
     else
       DateTime.parse("#{due_date} #{date.year}")
