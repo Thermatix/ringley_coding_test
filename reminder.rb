@@ -3,6 +3,8 @@ class Reminder
   Display_Estate = -> estate { puts "%s | %s due date %s" % [estate[:reminder], estate[:code],estate[:date]]}
   Date_Template = "%e %b %Y"
   End_Of_First_Quarter = 4
+  Month = (60 * 60 * 24 * 7 * 4.34)
+
   def initialize(rules)
     @rules = rules
   end
@@ -31,11 +33,8 @@ class Reminder
   end
 
   def get_due_date(due_date,date)
-    if DateTime.parse(due_date).month < End_Of_First_Quarter
-      DateTime.parse("#{due_date} #{date.year + 1}")
-    else
-      DateTime.parse("#{due_date} #{date.year}")
-    end
+    mod = (DateTime.parse(due_date).month < End_Of_First_Quarter) ? 1 : 0
+    DateTime.parse("#{due_date} #{date.year + mod}")
   end
 
   def get_reminder(due_date,service_charge)
@@ -69,15 +68,7 @@ class Reminder
     range === DateTime.parse("#{date} #{for_date.year + mod}").to_time.to_i
   end
 
-  def get_year(end_date,date)
-    if (end_year = Time.at(end_date).to_datetime.year) > date.year
-      end_year
-    else
-      date.year
-    end
-  end
-
   def to_months(count)
-    (@month ||= 60 * 60 * 24 * 7 * 4.34) * count
+    Month * count
   end
 end
