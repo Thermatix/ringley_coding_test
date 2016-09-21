@@ -1,6 +1,8 @@
 class Reminder
   attr_reader :rules
   Display_Estate = -> estate { puts "%s | %s due date %s" % [estate[:reminder], estate[:code],estate[:date]]}
+  Date_Template = "%e %b %Y"
+
   def initialize(rules)
     @rules = rules
   end
@@ -17,12 +19,28 @@ class Reminder
   def get_dates(date,estates)
     estates.inject([]) do |res,estate|
       due_dates = check_if_due estate['due_dates'],estate['service_charge'],date
-      due_dates ? res + due_dates.map {|d| {date: d,
-                                            code: estate['estate_code'],
-                                            reminder: (DateTime.parse(d) - @rules['days_before'][estate['service_charge']]).strftime("%e %b %Y") }} : res
+      due_dates ? res + due_dates.map {|dd|
+        due_date = get_due_date(dd,date)
+        {
+          date: due_date.strftime(Date_Template),
+          code: estate['estate_code'],
+          reminder: get_reminder(due_date,estate['service_charge'])
+        }
+      } : res
     end
   end
 
+  def get_due_date(due_date,date)
+    if DateTime.parse(due_date).month < 4
+      DateTime.parse("#{due_date} #{date.year + 1}")
+    else
+      DateTime.parse("#{due_date} #{date.year}")
+    end
+  end
+
+  def get_reminder(due_date,service_charge)
+    (due_date - @rules['days_before'][service_charge]).strftime(Date_Template)
+  end
   def dispay_estate(dates)
     dates.each(&Display_Estate)
   end
@@ -35,13 +53,20 @@ class Reminder
   end
 
   def within_next_service_period?(for_date,month_count,date)
-    start_date = for_date.to_time.to_i
-    end_date = start_date + to_months(month_count)
-    res = (start_date..end_date) === DateTime.parse("#{date} #{for_date.year}").to_time.to_i #checks this year
+    s_period = service_period(for_date,month_count)
+    res = within_date_range(s_period,date,for_date)
     unless res
-      res = (start_date..end_date) === DateTime.parse("#{date} #{for_date.year + 1}").to_time.to_i #checks next year
+      res = within_date_range(s_period,date,for_date,1)
     end
     res
+  end
+
+  def service_period(for_date,month_count)
+  ((s = for_date.to_time.to_i)..(s + to_months(month_count)))
+  end
+
+  def within_date_range(range,date,for_date,mod=0)
+    range === DateTime.parse("#{date} #{for_date.year + mod}").to_time.to_i
   end
 
   def get_year(end_date,date)
