@@ -1,20 +1,19 @@
 class Reminder
   attr_reader :rules
-  Display_Estate = -> estate { puts "%s | %s due date %s" % [estate[:reminder], estate[:code],estate[:date]]}
+  Display_Estate = -> ((estate,i),date) { puts "%#{date.length}s | %s #{estate.empty? ? "No reminders" : "due date"} %s" % [i < 1 ? date : "" , estate[:code],estate[:date]]}
   Date_Template = "%e %b %Y"
   End_Of_First_Quarter = 4
   Month = (60 * 60 * 24 * 7 * 4.34)
-
+  No_Reminders = [{}]
   def initialize(rules)
     @rules = rules
   end
 
   def on(date,estates)
     dates = get_dates date,estates
-    puts "Estate service charges due for the next service period(#{date.to_date}):"
-    puts "   Dates    |  Reminders "
+    puts "    Date    |  Reminders "
     puts "-------------------------"
-    dispay_estate dates
+    dispay_estate(dates.empty? ? No_Reminders : dates ,date)
   end
 
 
@@ -45,8 +44,8 @@ class Reminder
     (due_date - @rules['days_before'][service_charge]).strftime(Date_Template)
   end
 
-  def dispay_estate(dates)
-    dates.each(&Display_Estate)
+  def dispay_estate(dates,date)
+    dates.each_with_index.each_with_object(date.strftime(Date_Template),&Display_Estate)
   end
 
   private
