@@ -12,4 +12,4 @@ To select a date just enter
 ruby service_charge_reminder.rb <year> <month> <day>
 ```
 
-the day argument isn't necessary but is supported.
+the day argument isn't necessary but without it the date will be set to the beginning of the month.
